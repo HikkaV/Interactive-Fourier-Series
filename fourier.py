@@ -3,14 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import animation
+import os
 
 
 class FourierApp:
     sns.set()
 
-    def __init__(self, func, low_lim=-np.pi, high_lim=np.pi, n=3, figsize=(15, 12), k=5):
-        if n>10:
-            print('Calculating fourier series for more than 10 items is inefficient')
+    def __init__(self, func, low_lim=-np.pi, high_lim=np.pi, n=3, figsize=(15, 12), k=5, save=False):
+        if n > 10:
+            print('Calculating fourier series for more than 10 items is computationally inefficient')
         self.func_name = func.__name__
         self.n = n
         self.k = k
@@ -23,8 +24,15 @@ class FourierApp:
         self.initial, = plt.plot([], [], color="blue")
         self.initial.set_data(self.xdata, self.ydata)
         self.fourier, = plt.plot([], [], color="red", ls=':')
-        Writer = animation.writers['pillow']
-        writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+        self.save = save
+        if self.save:
+            Writer = animation.writers['pillow']
+            self.writer = Writer(fps=1, metadata=dict(artist='Me'), bitrate=1800)
+            self.make_dir()
+
+    def make_dir(self):
+        if not os.path.exists('generated_gifs'):
+            os.mkdir('generated_gifs')
 
     def animate(self, i):
         plt.title('Fourier series for {0} with {1} elements'.format(self.func_name, i + 1))
@@ -63,5 +71,6 @@ class FourierApp:
     def run(self):
         anim = animation.FuncAnimation(self.fig, self.animate, init_func=self.init,
                                        frames=self.n, blit=False, repeat=True, save_count=50)
+        if self.save:
+            anim.save('generated_gifs/' + self.func_name + '_fourier_fit_{}.gif'.format(self.n), writer=self.writer)
         plt.show()
-        anim.save(self.func_name+'_fourier_fit.gif',writer='pillow')
