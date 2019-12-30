@@ -31,4 +31,4 @@ Example of usage:
 
 ![Demo gif](generated_gifs/step_func_fourier_fit_10.gif)
 
-
+For more examples, please head on to the next [folder](generated_gifs).
